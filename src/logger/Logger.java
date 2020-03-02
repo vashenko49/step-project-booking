@@ -36,24 +36,17 @@ public class Logger {
 
         File file = new File("application.log");
 
-        try {
-            FileWriter fileWriter = new FileWriter(file, true);
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+        try (
+                FileWriter fileWriter = new FileWriter(file, true);
+                BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
             bufferedWriter.append(stringBuilder.toString());
-            bufferedWriter.close();
-            fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 
-    public static void info(String desc) {
-        recordLog(info, desc);
-    }
+    public static void info(String desc) { recordLog(info, desc); }
 
-    public static void error(String desc) {
-        recordLog(err, desc);
-
-    }
+    public static void error(String desc) { recordLog(err, desc); }
 }
