@@ -1,51 +1,29 @@
 package Service.fileSystem;
 
-import logger.Logger;
-
 import java.io.*;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 
-public class FileSystem<T> {
-    public List<T> getListFromFile(String fileName) {
+public class FileSystem {
+    public Object getHashMapFromFile(String fileName) throws IOException, ClassNotFoundException {
         File file = new File(fileName);
-
         if (file.isFile()) {
-            try (InputStream inputStream = new FileInputStream(file)) {
-                ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-                Logger.info("recoverData");
-                return (List<T>) objectInputStream.readObject();
-            } catch (IOException | ClassNotFoundException e) {
-                Logger.error("Ошибка восстановления");
-            }
+            InputStream inputStream = new FileInputStream(file);
+            ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+            inputStream.close();
+            return objectInputStream.readObject();
         }
-        Logger.error("Ошибка восстановления");
-        return Collections.emptyList();
-
+        return Object.class;
     }
 
-    public boolean recordListToFile(String fileName, List<T> dataList) {
-        if (dataList.size() > 0) {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream)) {
-                objectOutputStream.writeObject(dataList);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
+    public void recordHashMapToFile(String fileName, Object data) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        objectOutputStream.writeObject(data);
+        objectOutputStream.close();
 
-            byte[] bytes = byteArrayOutputStream.toByteArray();
-            try (OutputStream outputStream = new FileOutputStream(fileName)) {
-                Logger.info("loadData");
-                outputStream.write(bytes);
-            } catch (IOException e) {
-                Logger.error("Ошибка сохранения");
-                return false;
-            }
-
-            return true;
-        } else {
-            return false;
-        }
+        byte[] bytes = byteArrayOutputStream.toByteArray();
+        OutputStream outputStream = new FileOutputStream(fileName);
+        outputStream.write(bytes);
+        outputStream.close();
     }
 }

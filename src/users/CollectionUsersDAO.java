@@ -1,11 +1,15 @@
 package users;
 
+import Service.fileSystem.FileSystemToHashMap;;
 import Service.fileSystem.WorkWithFileSystem;
 
-import java.util.List;
+import java.io.IOException;
+import java.util.HashMap;
 
-public class CollectionUsersDAO implements UsersDAO, WorkWithFileSystem {
-    public static final CollectionUsersDAO COLLECTION_USERS_DAO = new CollectionUsersDAO();
+public final class CollectionUsersDAO implements UsersDAO, WorkWithFileSystem {
+    private static final CollectionUsersDAO COLLECTION_USERS_DAO = new CollectionUsersDAO();
+    private final HashMap<String, User> users = new HashMap<>();
+    private final String fileName = "users";
 
     private CollectionUsersDAO() {
     }
@@ -15,37 +19,49 @@ public class CollectionUsersDAO implements UsersDAO, WorkWithFileSystem {
     }
 
     @Override
-    public boolean saveDataToFile() {
-        return false;
+    public boolean saveDataToFile() throws UsersOverflowException {
+        FileSystemToHashMap<String, User> bookingFileSystem = new FileSystemToHashMap<>();
+        try {
+            return bookingFileSystem.recordHashMapToFile(fileName, users);
+        } catch (IOException e) {
+            throw new UsersOverflowException("Ошибка сохранения");
+        }
     }
 
     @Override
-    public boolean loadData() {
-        return false;
+    public void loadData() throws UsersOverflowException {
+        FileSystemToHashMap<String, User> bookingFileSystem = new FileSystemToHashMap<>();
+        try {
+            users.putAll(bookingFileSystem.getHashMapFromFile(fileName));
+        } catch (IOException | ClassNotFoundException e) {
+            throw new UsersOverflowException("Ошибка загрузки");
+        }
     }
 
     @Override
-    public boolean createUser(User users) {
-        return false;
+    public boolean createUser(User user) {
+        users.put(user.getLogin(), user);
+        return users.containsKey(user.getLogin());
     }
 
     @Override
-    public boolean deleteUser(User users) {
-        return false;
+    public boolean deleteUser(User user) {
+        return users.remove(user.getLogin(), user);
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return null;
+    public User getUserByLogin(String login) {
+        return users.get(login);
     }
 
     @Override
-    public User getUserById(String id) {
-        return null;
+    public boolean logIn(String login, String password) {
+        return users.get(login).equalPassword(password);
     }
 
     @Override
-    public boolean validUserData(String login, String password) {
-        return false;
+    public boolean registration(String login, String password) {
+        users.put(login, new User(login, password));
+        return users.containsKey(login);
     }
 }

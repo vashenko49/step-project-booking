@@ -1,7 +1,13 @@
 package Service.fileSystem;
 
-public interface WorkWithFileSystem {
-    public boolean saveDataToFile();
+import booking.BookingOverflowException;
+import flight.FlightOverflowException;
+import users.UsersOverflowException;
 
-    public boolean loadData();
+import java.io.IOException;
+
+public interface WorkWithFileSystem {
+    public boolean saveDataToFile() throws BookingOverflowException, FlightOverflowException, UsersOverflowException;
+
+    public void loadData() throws IOException, ClassNotFoundException, BookingOverflowException, FlightOverflowException, UsersOverflowException;
 }

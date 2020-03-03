@@ -1,4 +1,7 @@
 package users;
 
-public class UsersOverflowException {
+public class UsersOverflowException extends Throwable {
+    public UsersOverflowException(String message) {
+        super(message);
+    }
 }

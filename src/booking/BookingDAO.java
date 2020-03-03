@@ -3,12 +3,16 @@ package booking;
 import java.util.List;
 
 public interface BookingDAO {
-    public List<Booking> getAllBookingsByUserId(String userId);
+    public List<Booking> getAllBookingsByLoginUser(String loginUser);
 
-    public Booking getBookingByUserIdAndFlightId(String userId, String flightId);
+    public Booking getBookingByLoginUserAndFlightId(String loginUser, int flightId);
 
-    public boolean deleteBookingByUserIdAndFlightId(String userId, String flightId);
+    public boolean deleteBookingByLoginUserAndFlightId(String loginUser, int flightId);
 
-    public boolean createBookingByUserIdAndFlightId(String userId, String flightId);
+    public boolean deleteBooking(Booking booking);
+
+    public boolean createBookingByLoginUserAndFlightId(String loginUser, int flightId);
+
+    public boolean addBookingFlight(Booking booking);
 
 }

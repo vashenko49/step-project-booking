@@ -7,10 +7,10 @@ public interface UsersDAO {
 
     public boolean deleteUser(User users);
 
-    public List<User> getAllUsers();
+    public User getUserByLogin(String login);
 
-    public User getUserById(String id);
+    public boolean logIn(String login, String password);
 
-    public boolean validUserData(String login, String password);
+    public boolean registration(String login, String password);
 
 }
