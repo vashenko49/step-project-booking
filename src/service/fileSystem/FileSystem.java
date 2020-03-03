@@ -1,7 +1,6 @@
-package Service.fileSystem;
+package service.fileSystem;
 
 import java.io.*;
-import java.util.HashMap;
 
 public class FileSystem {
     public Object getHashMapFromFile(String fileName) throws IOException, ClassNotFoundException {

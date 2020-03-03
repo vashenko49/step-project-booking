@@ -1,8 +1,8 @@
-import consoleApp.СonsoleApp;
+import consoleApp.ConsoleApp;
 
 public class Main {
     public static void main(String[] args) {
-        СonsoleApp сonsoleApp = new СonsoleApp(true);
-        сonsoleApp.run();
+        ConsoleApp consoleApp = new ConsoleApp(true);
+        consoleApp.run();
     }
 }

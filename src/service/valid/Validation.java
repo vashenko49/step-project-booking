@@ -1,5 +1,7 @@
-package Service.valid;
+package service.valid;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Scanner;
 
 public class Validation {
@@ -13,7 +15,7 @@ public class Validation {
         return strNum.matches("-?\\d+(\\.\\d+)?");
     }
 
-    public int scanInteger() {
+    public static int scanInteger() {
         String integer = scanner.next();
         boolean isValid = isNumeric(integer);
         while (!isValid) {
@@ -25,7 +27,7 @@ public class Validation {
         return Integer.parseInt(integer);
     }
 
-    public int scanInteger(int from, int to) {
+    public static int scanInteger(int from, int to) {
         String integer = scanner.next();
         boolean isValid = isNumeric(integer, from, to);
         while (!isValid) {
@@ -35,5 +37,14 @@ public class Validation {
         }
 
         return Integer.parseInt(integer);
+    }
+
+    private long StringDateToLongDate(String dateString) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        try {
+            return simpleDateFormat.parse(dateString).getTime();
+        } catch (ParseException e) {
+            return System.currentTimeMillis();
+        }
     }
 }

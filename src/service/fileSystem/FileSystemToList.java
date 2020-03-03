@@ -1,4 +1,4 @@
-package Service.fileSystem;
+package service.fileSystem;
 
 import java.io.*;
 import java.util.Collections;
@@ -17,11 +17,7 @@ public class FileSystemToList<T> {
     }
 
     public boolean recordListToFile(String fileName, List<T> dataList) throws IOException {
-        if (dataList.size() > 0) {
-            fileSystem.recordHashMapToFile(fileName, dataList);
-            return true;
-        } else {
-            return false;
-        }
+        fileSystem.recordHashMapToFile(fileName, dataList);
+        return true;
     }
 }

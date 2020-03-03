@@ -1,4 +1,4 @@
-package Service.fileSystem;
+package service.fileSystem;
 
 import java.io.*;
 import java.util.HashMap;
@@ -17,11 +17,7 @@ public class FileSystemToHashMap<K, D> {
     }
 
     public boolean recordHashMapToFile(String fileName, HashMap<K, D> dataHashMap) throws IOException {
-        if (dataHashMap.size() > 0) {
-            fileSystem.recordHashMapToFile(fileName, dataHashMap);
-            return true;
-        } else {
-            return false;
-        }
+        fileSystem.recordHashMapToFile(fileName, dataHashMap);
+        return true;
     }
 }

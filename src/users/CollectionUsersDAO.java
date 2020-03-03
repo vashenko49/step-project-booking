@@ -1,7 +1,7 @@
 package users;
 
-import Service.fileSystem.FileSystemToHashMap;;
-import Service.fileSystem.WorkWithFileSystem;
+import service.fileSystem.FileSystemToHashMap;;
+import service.fileSystem.WorkWithFileSystem;
 
 import java.io.IOException;
 import java.util.HashMap;
