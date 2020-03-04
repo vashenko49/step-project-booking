@@ -22,7 +22,6 @@ public class ConsoleApp {
     private FlightController flightController;
     private UsersController usersController;
 
-    private boolean isAdmin = false;
     private User currentUser;
     private boolean isExit = true;
 
@@ -47,7 +46,7 @@ public class ConsoleApp {
     ));
 
     private final OperationApp closeSession = new OperationApp("Завершшить сессию", this::logOut);
-    private final OperationApp logInOrRegistration = new OperationApp("Ввойти или зарегестрироваться", this::registrationAndLogInProcedure);
+    private final OperationApp logInOrRegistration = new OperationApp("Войти или зарегестрироваться", this::registrationAndLogInProcedure);
 
     private final List<OperationApp> admin = new ArrayList<>(Arrays.asList(
             new OperationApp("Создать рейс", this::createFlight),
@@ -75,14 +74,13 @@ public class ConsoleApp {
             System.out.println(operationApp.operationName);
             operationApp.operation.operation();
         }
-        if (Objects.isNull(currentUser)) {
+        if (Objects.isNull(currentUser) && !custom.contains(logInOrRegistration)) {
             custom.add(logInOrRegistration);
         }
         isExit = true;
     }
 
     public void run(boolean isAdmin) {
-        this.isAdmin = isAdmin;
         if (isAdmin) {
             custom.addAll(admin);
         } else {
@@ -167,11 +165,12 @@ public class ConsoleApp {
         currentUser = null;
         custom.removeAll(inSession);
         custom.remove(closeSession);
-        custom.add(logInOrRegistration);
+        if (!custom.contains(logInOrRegistration)) {
+            custom.add(logInOrRegistration);
+        }
     }
 
     public ConsoleApp() {
-        this.isAdmin = false;
         this.scanner = new Scanner(System.in);
         initController();
     }
