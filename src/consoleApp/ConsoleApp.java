@@ -12,17 +12,15 @@ import users.User;
 import users.UsersController;
 import users.UsersService;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class ConsoleApp {
+    private final Scanner scanner;
     private BookingController bookingController;
     private FlightController flightController;
     private UsersController usersController;
 
     private boolean isAdmin = false;
-    private boolean isLogIn = false;
     private User currentUser;
     private boolean isExit = true;
 
@@ -43,9 +41,11 @@ public class ConsoleApp {
     private final List<OperationApp> inSession = new ArrayList<>(Arrays.asList(
             new OperationApp("Поиск и бронировка рейса", this::findAndBookingFlight),
             new OperationApp("Отменить бронирование", this::cancelFlight),
-            new OperationApp("Завершшить сессию", this::logOut),
             new OperationApp("Мои бронирования", this::printOnlineTable)
     ));
+
+    private final OperationApp closeSession = new OperationApp("Завершшить сессию", this::logOut);
+    private final OperationApp logInOrRegistration = new OperationApp("Ввойти или зарегестрироваться", this::registrationAndLogInProcedure);
 
     private final List<OperationApp> admin = new ArrayList<>(Arrays.asList(
             new OperationApp("Создать рейс", this::createFlight),
@@ -53,6 +53,8 @@ public class ConsoleApp {
             new OperationApp("Список клиентов", this::getAllUsers),
             new OperationApp("Сохранить изменения", this::saveChange)
     ));
+
+    List<OperationApp> custom = new ArrayList<>(mainCommands);
 
     private void saveChange() {
         if (usersController.saveDataToFile() && flightController.saveDataToFile() && bookingController.saveDataToFile()) {
@@ -64,25 +66,28 @@ public class ConsoleApp {
     }
 
     private void registrationAndLogInProcedure() {
-        isExit = true;
         while (isExit) {
             printCommand(logInRegister);
             OperationApp operationApp = logInRegister.get(Validation.scanInteger(1, logInRegister.size()) - 1);
             System.out.println(operationApp.operationName);
             operationApp.operation.operation();
         }
+        if(Objects.isNull(currentUser)){
+            custom.add(logInOrRegistration);
+        }
+        isExit = true;
     }
 
-    public void run() {
-        registrationAndLogInProcedure();
-        isExit = true;
-        List<OperationApp> custom = new ArrayList<>(mainCommands);
-        if (isLogIn || isAdmin) {
-            custom.addAll(inSession);
-        }
+    public void run(boolean isAdmin) {
+        this.isAdmin = isAdmin;
         if (isAdmin) {
             custom.addAll(admin);
+        } else {
+            custom.removeAll(admin);
         }
+        registrationAndLogInProcedure();
+        isExit = true;
+
         while (isExit) {
             printCommand(custom);
             OperationApp operationApp = custom.get(Validation.scanInteger(1, custom.size()) - 1);
@@ -116,23 +121,21 @@ public class ConsoleApp {
 
 
     private void logOut() {
+        currentUser = null;
+        custom.removeAll(inSession);
+        custom.remove(closeSession);
+        custom.add(logInOrRegistration);
     }
 
     public ConsoleApp() {
         this.isAdmin = false;
-        initController();
-    }
-
-    public ConsoleApp(boolean isAdmin) {
-        this.isAdmin = isAdmin;
+        this.scanner = new Scanner(System.in);
         initController();
     }
 
     private void initController() {
         bookingController = new BookingController(new BookingService(CollectionBookingDAO.instanceOf()));
-        bookingController.loadData();
         flightController = new FlightController(new FlightService(CollectionFlightDAO.instanceOf()));
-        flightController.loadData();
         usersController = new UsersController(new UsersService(CollectionUsersDAO.instanceOf()));
         usersController.loadData();
     }
@@ -145,11 +148,31 @@ public class ConsoleApp {
     }
 
     private void logIn() {
-
+        System.out.print("Введите логгин -> ");
+        String login = scanner.next();
+        System.out.print("Введите пароль -> ");
+        String password = scanner.next();
+        if (usersController.logIn(login, password)) {
+            custom.addAll(inSession);
+            custom.add(closeSession);
+            custom.remove(logInOrRegistration);
+            currentUser = usersController.getUserByLogin(login);
+            isExit = false;
+        } else {
+            System.out.println("Ошибка. Логин или пароль введет неправильно");
+        }
     }
 
     private void registration() {
-
+        System.out.print("Введите логгин -> ");
+        String login = scanner.next();
+        System.out.print("Введите пароль -> ");
+        String password = scanner.next();
+        if (usersController.registration(login, password)) {
+            System.out.println("Регестрация успешна");
+        } else {
+            System.out.println("Ошибка. Логин уже существует");
+        }
     }
 
     private void printOnlineTable() {

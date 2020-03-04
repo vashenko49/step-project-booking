@@ -8,7 +8,6 @@ public class FileSystem {
         if (file.isFile()) {
             InputStream inputStream = new FileInputStream(file);
             ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-            inputStream.close();
             return objectInputStream.readObject();
         }
         return Object.class;

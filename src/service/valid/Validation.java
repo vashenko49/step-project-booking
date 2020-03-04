@@ -33,7 +33,7 @@ public class Validation {
         while (!isValid) {
             System.out.print("Enter valid data -> ");
             integer = scanner.next();
-            isValid = isNumeric(integer);
+            isValid = isNumeric(integer, from, to);
         }
 
         return Integer.parseInt(integer);

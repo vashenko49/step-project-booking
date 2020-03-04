@@ -1,10 +1,12 @@
 package users;
 
+import logger.Logger;
 import service.fileSystem.FileSystemToHashMap;;
 import service.fileSystem.WorkWithFileSystem;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Objects;
 
 public final class CollectionUsersDAO implements UsersDAO, WorkWithFileSystem {
     private static final CollectionUsersDAO COLLECTION_USERS_DAO = new CollectionUsersDAO();
@@ -30,9 +32,10 @@ public final class CollectionUsersDAO implements UsersDAO, WorkWithFileSystem {
 
     @Override
     public void loadData() throws UsersOverflowException {
-        FileSystemToHashMap<String, User> bookingFileSystem = new FileSystemToHashMap<>();
+        FileSystemToHashMap<String, User> userFileSystemToHashMap = new FileSystemToHashMap<>();
         try {
-            users.putAll(bookingFileSystem.getHashMapFromFile(fileName));
+            HashMap<String, User> gog = userFileSystemToHashMap.getHashMapFromFile(fileName);
+            users.putAll(gog);
         } catch (IOException | ClassNotFoundException e) {
             throw new UsersOverflowException("Ошибка загрузки");
         }
@@ -56,12 +59,25 @@ public final class CollectionUsersDAO implements UsersDAO, WorkWithFileSystem {
 
     @Override
     public boolean logIn(String login, String password) {
-        return users.get(login).equalPassword(password);
+        User user = users.get(login);
+        if (Objects.nonNull(user)) {
+            return user.equalPassword(password);
+        }
+        return false;
     }
 
     @Override
     public boolean registration(String login, String password) {
-        users.put(login, new User(login, password));
-        return users.containsKey(login);
+        if (users.containsKey(login)) {
+            return false;
+        } else {
+            users.put(login, new User(login, password));
+            try {
+                saveDataToFile();
+            } catch (UsersOverflowException e) {
+                return false;
+            }
+            return users.containsKey(login);
+        }
     }
 }
