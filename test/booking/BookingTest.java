@@ -10,7 +10,7 @@ public class BookingTest {
         int idFlight = 55;
         String login = "3";
         //when
-        Booking newBooking = new Booking(idFlight, login);
+        Booking newBooking = new Booking(idFlight, 55, "gogo","bobo");
         //than
     }
 }

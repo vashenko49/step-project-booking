@@ -7,11 +7,11 @@ public interface BookingDAO {
 
     public Booking getBookingByLoginUserAndFlightId(String loginUser, int flightId);
 
-    public boolean deleteBookingByLoginUserAndFlightId(String loginUser, int flightId);
+    public boolean deleteBookingByLoginUserAndDdBooking(String loginUser, int idBooking, String namePassenger);
 
     public boolean deleteBooking(Booking booking);
 
-    public boolean createBookingByLoginUserAndFlightId(String loginUser, int flightId);
+    public boolean createBookingByLoginUserAndFlightId(String loginUser, int flightId, String namePassenger);
 
     public boolean addBookingFlight(Booking booking);
 

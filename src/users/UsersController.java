@@ -1,7 +1,5 @@
 package users;
 
-import logger.Logger;
-
 public class UsersController {
     private final UsersService USERS_SERVICE;
 
@@ -16,13 +14,6 @@ public class UsersController {
         USERS_SERVICE.loadData();
     }
 
-    public boolean createUser(User user) {
-        return USERS_SERVICE.createUser(user);
-    }
-
-    public boolean deleteUser(User user) {
-        return USERS_SERVICE.deleteUser(user);
-    }
 
     public User getUserByLogin(String login) {
         return USERS_SERVICE.getUserByLogin(login);

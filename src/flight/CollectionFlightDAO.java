@@ -50,6 +50,13 @@ public final class CollectionFlightDAO implements FlightDAO, WorkWithFileSystem 
     }
 
     @Override
+    public List<Flight> findFlights(String from, String to, long departmentTime, int numberOfFreePlace) {
+        return flights.stream()
+                .filter(f -> f.getDepartureTime() > departmentTime && f.getFrom().equals(from) && f.getTo().equals(to) && f.getNumberOfFreePlaces() >= numberOfFreePlace)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Flight getFlightBuFlightId(int flightId) {
         for (Flight flight : flights) {
             if (flight.getIdFlight() == flightId) {

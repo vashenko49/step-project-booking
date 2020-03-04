@@ -1,5 +1,6 @@
 package consoleApp;
 
+import booking.Booking;
 import flight.Flight;
 import service.valid.Validation;
 import booking.BookingController;
@@ -42,8 +43,9 @@ public class ConsoleApp {
     private final List<OperationApp> inSession = new ArrayList<>(Arrays.asList(
             new OperationApp("Поиск и бронировка рейса", this::findAndBookingFlight),
             new OperationApp("Отменить бронирование", this::cancelBooking),
-            new OperationApp("Мои бронирования", this::printOnlineTable)
+            new OperationApp("Мои бронирования", this::myBooking)
     ));
+
 
     private final OperationApp closeSession = new OperationApp("Завершшить сессию", this::logOut);
     private final OperationApp logInOrRegistration = new OperationApp("Войти или зарегестрироваться", this::registrationAndLogInProcedure);
@@ -105,9 +107,6 @@ public class ConsoleApp {
         isExit = false;
     }
 
-    private void getAllUsers() {
-    }
-
     private void getAllFlights() {
         for (Flight flight : flightController.getAllFlights()) {
             System.out.println(flight.toString());
@@ -144,10 +143,73 @@ public class ConsoleApp {
 
 
     private void cancelBooking() {
+        System.out.print("Enter name passenger -> ");
+        String namePassenger = scanner.next();
+        System.out.print("Enter id booking");
+        int idBooking = Validation.scanInteger();
+        if (bookingController.deleteBookingByLoginUserAndDdBooking(currentUser.getLogin(), idBooking, namePassenger)) {
+            System.out.println("Booking cancel");
+        } else {
+            System.out.println("Fail booking cancel");
+        }
 
     }
 
     private void findAndBookingFlight() {
+        System.out.print("From -> ");
+        String from = scanner.next();
+        System.out.print("To -> ");
+        String to = scanner.next();
+        System.out.print("Enter departure time (dd/mm/yyyy-hh:mm) -> ");
+        long departureTime = Validation.scanDate();
+        System.out.print("Number of passengers -> ");
+        int numberOfPassengers = Validation.scanInteger();
+        List<Flight> flights = flightController.findFlights(from, to, departureTime, numberOfPassengers);
+
+        if (flights.size() > 0) {
+            for (Flight flight : flights) {
+                System.out.println(flight.prettyFormat());
+            }
+            System.out.println("1 - Забронировать рейс");
+            System.out.println("2 - Назад");
+            int isBooking = Validation.scanInteger(1, 2);
+
+            if (isBooking == 1) {
+                System.out.print("Enter id flight -> ");
+                int flightId = Validation.scanInteger();
+                if (Objects.nonNull(flightController.getFlightBuFlightId(flightId))) {
+                    for (int i = 0; i < numberOfPassengers; i++) {
+                        System.out.printf("Name %d passenger -> ", i + 1);
+                        if (bookingFlight(currentUser.getLogin(), flightId, scanner.next())) {
+                            System.out.println("Booking success");
+                        } else {
+                            System.out.println("Booking fail");
+                        }
+                    }
+
+                } else {
+                    System.out.println("Not found flight");
+                }
+            }
+        } else {
+            System.out.println("No results were found for your request.");
+        }
+    }
+
+    private boolean bookingFlight(String loginUser, int flightId, String namePassenger) {
+        return bookingController.createBookingByLoginUserAndFlightId(loginUser, flightId, namePassenger);
+    }
+
+    private void myBooking() {
+        List<Booking> bookings = bookingController.getAllBookingsByLoginUser(currentUser.getLogin());
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Booking booking : bookings) {
+            stringBuilder.append("-----------------------------------------------------------\n");
+            stringBuilder.append(booking.prettyFormat());
+            stringBuilder.append(flightController.getFlightBuFlightId(booking.getIdFlight()).prettyFormat());
+            stringBuilder.append("-----------------------------------------------------------\n");
+        }
+        System.out.println(stringBuilder.toString());
     }
 
     private void informationAboutFlight() {

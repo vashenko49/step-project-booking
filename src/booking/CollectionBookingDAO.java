@@ -4,13 +4,14 @@ import service.fileSystem.FileSystemToList;
 import service.fileSystem.WorkWithFileSystem;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public final class CollectionBookingDAO implements BookingDAO, WorkWithFileSystem {
     private static final CollectionBookingDAO COLLECTION_BOOKING_DAO = new CollectionBookingDAO();
-    private List<Booking> bookings = Collections.emptyList();
+    private List<Booking> bookings = new ArrayList<>();
     private final String fileName = "bookings";
 
 
@@ -61,22 +62,54 @@ public final class CollectionBookingDAO implements BookingDAO, WorkWithFileSyste
     }
 
     @Override
-    public boolean deleteBookingByLoginUserAndFlightId(String loginUser, int flightId) {
-        return bookings.removeIf(booking -> booking.getIdFlight() == flightId && booking.getLoginUser().equals(loginUser));
+    public boolean deleteBookingByLoginUserAndDdBooking(String loginUser, int idBooking, String namePassenger) {
+        boolean result = bookings.removeIf(booking -> booking.getIdBooking() == idBooking && booking.getLoginUser().equals(loginUser) && booking.getNamePassenger().equals(namePassenger));
+        if (result) {
+            try {
+                saveDataToFile();
+            } catch (BookingOverflowException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 
     @Override
     public boolean deleteBooking(Booking booking) {
-        return bookings.remove(booking);
+        boolean result = bookings.remove(booking);
+        if (result) {
+            try {
+                saveDataToFile();
+            } catch (BookingOverflowException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 
     @Override
-    public boolean createBookingByLoginUserAndFlightId(String loginUser, int flightId) {
-        return bookings.add(new Booking(flightId, loginUser));
+    public boolean createBookingByLoginUserAndFlightId(String loginUser, int flightId, String namePassenger) {
+        boolean result = bookings.add(new Booking(flightId, ThreadLocalRandom.current().nextInt(100, 200), loginUser, namePassenger));
+        if (result) {
+            try {
+                saveDataToFile();
+            } catch (BookingOverflowException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 
     @Override
     public boolean addBookingFlight(Booking booking) {
-        return bookings.add(booking);
+        boolean result = bookings.add(booking);
+        if (result) {
+            try {
+                saveDataToFile();
+            } catch (BookingOverflowException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 }

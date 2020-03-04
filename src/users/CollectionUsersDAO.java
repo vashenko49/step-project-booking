@@ -1,6 +1,5 @@
 package users;
 
-import logger.Logger;
 import service.fileSystem.FileSystemToHashMap;;
 import service.fileSystem.WorkWithFileSystem;
 
@@ -39,17 +38,6 @@ public final class CollectionUsersDAO implements UsersDAO, WorkWithFileSystem {
         } catch (IOException | ClassNotFoundException e) {
             throw new UsersOverflowException("Ошибка загрузки");
         }
-    }
-
-    @Override
-    public boolean createUser(User user) {
-        users.put(user.getLogin(), user);
-        return users.containsKey(user.getLogin());
-    }
-
-    @Override
-    public boolean deleteUser(User user) {
-        return users.remove(user.getLogin(), user);
     }
 
     @Override

@@ -43,4 +43,8 @@ public class FlightController {
     public boolean deleteFlight(Flight flight) {
         return FLIGHT_SERVICE.deleteFlight(flight);
     }
+
+    public List<Flight> findFlights(String from, String to, long departmentTime, int numberOfFreePlace) {
+        return FLIGHT_SERVICE.findFlights(from, to, departmentTime, numberOfFreePlace);
+    }
 }

@@ -1,9 +1,6 @@
 package users;
 
-import booking.BookingOverflowException;
 import logger.Logger;
-
-import java.io.IOException;
 
 public class UsersService {
     private final CollectionUsersDAO COLLECTION_USERS_DAO;
@@ -14,6 +11,7 @@ public class UsersService {
 
     public boolean saveDataToFile() {
         try {
+            Logger.info("Запись users в файл");
             return COLLECTION_USERS_DAO.saveDataToFile();
         } catch (UsersOverflowException e) {
             Logger.error(e.toString() + " UsersOverflowException");
@@ -24,28 +22,25 @@ public class UsersService {
     public void loadData() {
         try {
             COLLECTION_USERS_DAO.loadData();
+            Logger.info("Восстановление users из файла");
         } catch (UsersOverflowException ex) {
             Logger.error(ex.toString() + " UsersOverflowException");
         }
     }
 
-    public boolean createUser(User user) {
-        return COLLECTION_USERS_DAO.createUser(user);
-    }
-
-    public boolean deleteUser(User user) {
-        return COLLECTION_USERS_DAO.deleteUser(user);
-    }
 
     public User getUserByLogin(String login) {
+        Logger.info("Получение пользователя по логину");
         return COLLECTION_USERS_DAO.getUserByLogin(login);
     }
 
     public boolean logIn(String login, String password) {
+        Logger.info("Вход пользователя в систему");
         return COLLECTION_USERS_DAO.logIn(login, password);
     }
 
     public boolean registration(String login, String password) {
+        Logger.info("Регестрация пользователя в систему");
         return COLLECTION_USERS_DAO.registration(login, password);
     }
 }
