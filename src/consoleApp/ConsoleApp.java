@@ -1,5 +1,6 @@
 package consoleApp;
 
+import flight.Flight;
 import service.valid.Validation;
 import booking.BookingController;
 import booking.BookingService;
@@ -13,6 +14,7 @@ import users.UsersController;
 import users.UsersService;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ConsoleApp {
     private final Scanner scanner;
@@ -40,7 +42,7 @@ public class ConsoleApp {
 
     private final List<OperationApp> inSession = new ArrayList<>(Arrays.asList(
             new OperationApp("Поиск и бронировка рейса", this::findAndBookingFlight),
-            new OperationApp("Отменить бронирование", this::cancelFlight),
+            new OperationApp("Отменить бронирование", this::cancelBooking),
             new OperationApp("Мои бронирования", this::printOnlineTable)
     ));
 
@@ -50,9 +52,10 @@ public class ConsoleApp {
     private final List<OperationApp> admin = new ArrayList<>(Arrays.asList(
             new OperationApp("Создать рейс", this::createFlight),
             new OperationApp("Удалить рейс", this::deleteFlight),
-            new OperationApp("Список клиентов", this::getAllUsers),
+            new OperationApp("Список всех рейсов", this::getAllFlights),
             new OperationApp("Сохранить изменения", this::saveChange)
     ));
+
 
     List<OperationApp> custom = new ArrayList<>(mainCommands);
 
@@ -72,7 +75,7 @@ public class ConsoleApp {
             System.out.println(operationApp.operationName);
             operationApp.operation.operation();
         }
-        if(Objects.isNull(currentUser)){
+        if (Objects.isNull(currentUser)) {
             custom.add(logInOrRegistration);
         }
         isExit = true;
@@ -96,6 +99,10 @@ public class ConsoleApp {
         }
     }
 
+    public void run() {
+        run(false);
+    }
+
     private void exit() {
         isExit = false;
     }
@@ -103,20 +110,56 @@ public class ConsoleApp {
     private void getAllUsers() {
     }
 
+    private void getAllFlights() {
+        for (Flight flight : flightController.getAllFlights()) {
+            System.out.println(flight.toString());
+        }
+    }
+
     private void deleteFlight() {
+        System.out.print("id рейса -> ");
+        int flightId = Validation.scanInteger();
+        if (flightController.deleteFlight(flightController.getFlightBuFlightId(flightId))) {
+            System.out.println("Удаление успешно");
+        } else {
+            System.out.println("Удаление провалилось");
+        }
     }
 
     private void createFlight() {
+        System.out.print("Enter departure city -> ");
+        String from = scanner.next();
+        System.out.print("Enter arrival city -> ");
+        String to = scanner.next();
+        System.out.print("Enter departure time (dd/mm/yyyy-hh:mm) -> ");
+        long departureTime = Validation.scanDate();
+        System.out.print("Enter arrival time (dd/mm/yyyy-hh:mm) -> ");
+        long arrivalTime = Validation.scanDate();
+        System.out.print("Enter number of free place -> ");
+        int numberOfFreePlaces = Validation.scanInteger();
+        if (flightController.createFlight(new Flight(from, to, ThreadLocalRandom.current().nextInt(0, 100), departureTime, arrivalTime, numberOfFreePlaces))) {
+            System.out.println("Успешно создано");
+        } else {
+            System.out.println("Ошибка при создании");
+        }
     }
 
 
-    private void cancelFlight() {
+    private void cancelBooking() {
+
     }
 
     private void findAndBookingFlight() {
     }
 
     private void informationAboutFlight() {
+        System.out.print("Enter id flight -> ");
+        Flight flight = flightController.getFlightBuFlightId(Validation.scanInteger());
+        if (!Objects.isNull(flight)) {
+            System.out.println(flight.prettyFormat());
+        } else {
+            System.out.println("Not found");
+        }
     }
 
 
@@ -138,6 +181,8 @@ public class ConsoleApp {
         flightController = new FlightController(new FlightService(CollectionFlightDAO.instanceOf()));
         usersController = new UsersController(new UsersService(CollectionUsersDAO.instanceOf()));
         usersController.loadData();
+        flightController.loadData();
+        bookingController.loadData();
     }
 
     private void printCommand(List<OperationApp> command) {
@@ -176,6 +221,8 @@ public class ConsoleApp {
     }
 
     private void printOnlineTable() {
-
+        for (Flight flight : flightController.getAllFlightsInAllDay()) {
+            System.out.println(flight.prettyFormat());
+        }
     }
 }

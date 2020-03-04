@@ -31,13 +31,14 @@ public final class CollectionFlightDAO implements FlightDAO, WorkWithFileSystem 
 
     @Override
     public void loadData() throws FlightOverflowException {
-        FileSystemToList<Flight> bookingFileSystem = new FileSystemToList<>();
+        FileSystemToList<Flight> flightFileSystemToList = new FileSystemToList<>();
         try {
-            bookingFileSystem.getListFromFile(fileName).stream().peek(b -> {
-                if (!flights.contains(b)) {
-                    flights.add(b);
+            List<Flight> listFromFile = flightFileSystemToList.getListFromFile(fileName);
+            for (Flight flight : listFromFile) {
+                if (!flights.contains(flight)) {
+                    flights.add(flight);
                 }
-            }).close();
+            }
         } catch (IOException | ClassNotFoundException e) {
             throw new FlightOverflowException("Ошибка загрузки");
         }

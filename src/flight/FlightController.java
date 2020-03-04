@@ -1,6 +1,5 @@
 package flight;
 
-import logger.Logger;
 
 import java.util.List;
 
