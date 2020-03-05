@@ -1,11 +1,16 @@
 package users;
 
-import Service.fileSystem.WorkWithFileSystem;
+import service.fileSystem.FileSystemToHashMap;;
+import service.fileSystem.WorkWithFileSystem;
 
-import java.util.List;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Objects;
 
-public class CollectionUsersDAO implements UsersDAO, WorkWithFileSystem {
-    public static final CollectionUsersDAO COLLECTION_USERS_DAO = new CollectionUsersDAO();
+public final class CollectionUsersDAO implements UsersDAO, WorkWithFileSystem {
+    private static final CollectionUsersDAO COLLECTION_USERS_DAO = new CollectionUsersDAO();
+    private final HashMap<String, User> users = new HashMap<>();
+    private final String fileName = "users";
 
     private CollectionUsersDAO() {
     }
@@ -15,37 +20,52 @@ public class CollectionUsersDAO implements UsersDAO, WorkWithFileSystem {
     }
 
     @Override
-    public boolean saveDataToFile() {
+    public boolean saveDataToFile() throws UsersOverflowException {
+        FileSystemToHashMap<String, User> bookingFileSystem = new FileSystemToHashMap<>();
+        try {
+            return bookingFileSystem.recordHashMapToFile(fileName, users);
+        } catch (IOException e) {
+            throw new UsersOverflowException("Ошибка сохранения");
+        }
+    }
+
+    @Override
+    public void loadData() throws UsersOverflowException {
+        FileSystemToHashMap<String, User> userFileSystemToHashMap = new FileSystemToHashMap<>();
+        try {
+            HashMap<String, User> gog = userFileSystemToHashMap.getHashMapFromFile(fileName);
+            users.putAll(gog);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new UsersOverflowException("Ошибка загрузки");
+        }
+    }
+
+    @Override
+    public User getUserByLogin(String login) {
+        return users.get(login);
+    }
+
+    @Override
+    public boolean logIn(String login, String password) {
+        User user = users.get(login);
+        if (Objects.nonNull(user)) {
+            return user.equalPassword(password);
+        }
         return false;
     }
 
     @Override
-    public boolean loadData() {
-        return false;
-    }
-
-    @Override
-    public boolean createUser(User users) {
-        return false;
-    }
-
-    @Override
-    public boolean deleteUser(User users) {
-        return false;
-    }
-
-    @Override
-    public List<User> getAllUsers() {
-        return null;
-    }
-
-    @Override
-    public User getUserById(String id) {
-        return null;
-    }
-
-    @Override
-    public boolean validUserData(String login, String password) {
-        return false;
+    public boolean registration(String login, String password) {
+        if (users.containsKey(login)) {
+            return false;
+        } else {
+            users.put(login, new User(login, password));
+            try {
+                saveDataToFile();
+            } catch (UsersOverflowException e) {
+                return false;
+            }
+            return users.containsKey(login);
+        }
     }
 }

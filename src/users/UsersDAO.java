@@ -1,16 +1,11 @@
 package users;
 
-import java.util.List;
 
 public interface UsersDAO {
-    public boolean createUser(User users);
+    public User getUserByLogin(String login);
 
-    public boolean deleteUser(User users);
+    public boolean logIn(String login, String password);
 
-    public List<User> getAllUsers();
-
-    public User getUserById(String id);
-
-    public boolean validUserData(String login, String password);
+    public boolean registration(String login, String password);
 
 }
