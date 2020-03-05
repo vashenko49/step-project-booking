@@ -11,6 +11,10 @@ public interface FlightDAO {
 
     public List<Flight> getAllFlightsInAllDay();
 
+    public void bookingFlight(int flightId);
+
+    public void cancelBookingFlight(int flightId);
+
     public boolean createFlight(Flight flight);
 
     public boolean deleteFlight(Flight flight);

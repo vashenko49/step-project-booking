@@ -47,4 +47,12 @@ public class FlightController {
     public List<Flight> findFlights(String from, String to, long departmentTime, int numberOfFreePlace) {
         return FLIGHT_SERVICE.findFlights(from, to, departmentTime, numberOfFreePlace);
     }
+
+    public void bookingFlight(int flightId) {
+        FLIGHT_SERVICE.bookingFlight(flightId);
+    }
+
+    public void cancelBookingFlight(int flightId) {
+        FLIGHT_SERVICE.cancelBookingFlight(flightId);
+    }
 }

@@ -21,20 +21,20 @@ public class BookingController {
         return bookingService.getAllBookingsByLoginUser(loginUser);
     }
 
-    public Booking getBookingByLoginUserAndFlightId(String loginUser, int flightId) {
-        return bookingService.getBookingByLoginUserAndFlightId(loginUser, flightId);
+    public Booking getBookingByBookingId( int bookingId) {
+        return bookingService.getBookingByBookingId( bookingId);
     }
 
-    public boolean deleteBookingByLoginUserAndDdBooking(String loginUser, int idBooking, String namePassenger) {
-        return bookingService.deleteBookingByLoginUserAndDdBooking(loginUser, idBooking, namePassenger);
+    public boolean deleteBookingByIdBooking(int idBooking) {
+        return bookingService.deleteBookingByIdBooking(idBooking);
     }
 
     public boolean deleteBooking(Booking booking) {
         return bookingService.deleteBooking(booking);
     }
 
-    public boolean createBookingByLoginUserAndFlightId(String loginUser, int flightId, String namePassenger) {
-        return bookingService.createBookingByLoginUserAndFlightId(loginUser, flightId, namePassenger);
+    public boolean createBookingByLoginUserAndFlightId(String loginUser, int flightId, String namePassenger, String lastNamePassenger) {
+        return bookingService.createBookingByLoginUserAndFlightId(loginUser, flightId, namePassenger, lastNamePassenger);
     }
 
     public boolean addBookingFlight(Booking booking) {

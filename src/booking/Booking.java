@@ -8,7 +8,11 @@ public class Booking implements Serializable {
     private int idBooking;
     private String loginUser;
     private String namePassenger;
+    private String lastNamePassenger;
 
+    public String getLastNamePassenger() {
+        return lastNamePassenger;
+    }
 
     public String getLoginUser() {
         return loginUser;
@@ -26,23 +30,27 @@ public class Booking implements Serializable {
         return idFlight;
     }
 
-    public Booking(int idFlight, int idBooking, String loginUser, String namePassenger) {
+    public Booking(int idFlight, int idBooking, String loginUser, String namePassenger, String lastNamePassenger) {
         this.idFlight = idFlight;
         this.idBooking = idBooking;
         this.loginUser = loginUser;
         this.namePassenger = namePassenger;
+        this.lastNamePassenger = lastNamePassenger;
     }
 
     public String prettyFormat() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("idBooking: ");
+        stringBuilder.append("Id booking: ");
         stringBuilder.append(idBooking);
         stringBuilder.append("\n");
-        stringBuilder.append("idFlight: ");
+        stringBuilder.append("Id flight: ");
         stringBuilder.append(idFlight);
         stringBuilder.append("\n");
-        stringBuilder.append("namePassenger: ");
+        stringBuilder.append("Name passenger: ");
         stringBuilder.append(namePassenger);
+        stringBuilder.append("\n");
+        stringBuilder.append("Last name passenger: ");
+        stringBuilder.append(lastNamePassenger);
         stringBuilder.append("\n");
         return stringBuilder.toString();
     }
@@ -56,11 +64,12 @@ public class Booking implements Serializable {
         return idFlight == booking.idFlight &&
                 idBooking == booking.idBooking &&
                 Objects.equals(loginUser, booking.loginUser) &&
-                Objects.equals(namePassenger, booking.namePassenger);
+                Objects.equals(namePassenger, booking.namePassenger) &&
+                Objects.equals(lastNamePassenger, booking.lastNamePassenger);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idFlight, idBooking, loginUser, namePassenger);
+        return Objects.hash(idFlight, idBooking, loginUser, namePassenger, lastNamePassenger);
     }
 }

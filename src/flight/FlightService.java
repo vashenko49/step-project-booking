@@ -66,4 +66,10 @@ public class FlightService {
         Logger.info("Поиск рейса");
         return COLLECTION_FLIGHT_DAO.findFlights(from, to, departmentTime,numberOfFreePlace);
     }
+    public void bookingFlight(int flightId) {
+        COLLECTION_FLIGHT_DAO.bookingFlight(flightId);
+    }
+    public void cancelBookingFlight(int flightId) {
+        COLLECTION_FLIGHT_DAO.cancelBookingFlight(flightId);
+    }
 }

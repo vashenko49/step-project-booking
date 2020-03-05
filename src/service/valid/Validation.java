@@ -2,6 +2,9 @@ package service.valid;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class Validation {
@@ -15,7 +18,7 @@ public class Validation {
         return strNum.matches("-?\\d+(\\.\\d+)?");
     }
 
-    public static boolean isDate(String s){
+    public static boolean isDate(String s) {
         return s.matches("(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\\d\\d[- /.](([0,1][0-9])|(2[0-3])):[0-5][0-9]");
     }
 
@@ -31,7 +34,7 @@ public class Validation {
         return Integer.parseInt(integer);
     }
 
-    public static long scanDate(){
+    public static long scanDate() {
         String date = scanner.next();
         boolean isValid = isDate(date);
         while (!isValid) {
@@ -56,11 +59,8 @@ public class Validation {
     }
 
     private static long StringDateToLongDate(String dateString) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy-HH:mm");
-        try {
-            return simpleDateFormat.parse(dateString).getTime();
-        } catch (ParseException e) {
-            return System.currentTimeMillis();
-        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy-HH:mm");
+        LocalDateTime dateTime = LocalDateTime.parse(dateString, formatter);
+        return dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 }

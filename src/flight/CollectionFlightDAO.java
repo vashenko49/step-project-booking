@@ -4,6 +4,9 @@ import service.fileSystem.FileSystemToList;
 import service.fileSystem.WorkWithFileSystem;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,8 +54,16 @@ public final class CollectionFlightDAO implements FlightDAO, WorkWithFileSystem 
 
     @Override
     public List<Flight> findFlights(String from, String to, long departmentTime, int numberOfFreePlace) {
+        LocalDateTime departmentTimeLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(departmentTime), TimeZone.getDefault().toZoneId());
+        LocalDateTime tomorrowLocalDateTime = departmentTimeLocalDateTime.plusDays(1);
         return flights.stream()
-                .filter(f -> f.getDepartureTime() > departmentTime && f.getFrom().equals(from) && f.getTo().equals(to) && f.getNumberOfFreePlaces() >= numberOfFreePlace)
+                .filter(f ->
+                        f.getDepartureTime() > departmentTime
+                                && f.getDepartureTime() < tomorrowLocalDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                                && f.getFrom().toLowerCase().equals(from.toLowerCase())
+                                && f.getTo().toLowerCase().equals(to.toLowerCase())
+                                && f.getNumberOfFreePlaces() > 0
+                                && f.getNumberOfFreePlaces() >= numberOfFreePlace)
                 .collect(Collectors.toList());
     }
 
@@ -68,8 +79,35 @@ public final class CollectionFlightDAO implements FlightDAO, WorkWithFileSystem 
 
     @Override
     public List<Flight> getAllFlightsInAllDay() {
-        long lastDay = System.currentTimeMillis() - 24 * 60 * 60 * 1000;
-        return flights.stream().filter(f -> f.getArrivalTime() > lastDay).collect(Collectors.toList());
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime tomorrow = now.plusDays(1);
+        return flights.stream().filter(f -> f.getDepartureTime() >= now.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() && f.getDepartureTime() <= tomorrow.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()).collect(Collectors.toList());
+    }
+
+    @Override
+    public void bookingFlight(int flightId) {
+        Flight flightBuFlightId = getFlightBuFlightId(flightId);
+        if (Objects.nonNull(flightBuFlightId)) {
+            flightBuFlightId.bookingFlight();
+            try {
+                saveDataToFile();
+            } catch (FlightOverflowException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void cancelBookingFlight(int flightId) {
+        Flight flightBuFlightId = getFlightBuFlightId(flightId);
+        if (Objects.nonNull(flightBuFlightId)) {
+            flightBuFlightId.cancelBookedFlight();
+            try {
+                saveDataToFile();
+            } catch (FlightOverflowException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

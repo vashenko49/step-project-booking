@@ -36,14 +36,14 @@ public class BookingService {
         return collectionBookingDAO.getAllBookingsByLoginUser(loginUser);
     }
 
-    public Booking getBookingByLoginUserAndFlightId(String loginUser, int flightId) {
+    public Booking getBookingByBookingId(int booingId) {
         Logger.info("Получить брони по логину пользователя и id рейса");
-        return collectionBookingDAO.getBookingByLoginUserAndFlightId(loginUser, flightId);
+        return collectionBookingDAO.getBookingByBookingId( booingId);
     }
 
-    public boolean deleteBookingByLoginUserAndDdBooking(String loginUser, int idBooking, String namePassenger) {
-        Logger.info("Удалить бронь по логину пользователя и id рейса");
-        return collectionBookingDAO.deleteBookingByLoginUserAndDdBooking(loginUser, idBooking, namePassenger);
+    public boolean deleteBookingByIdBooking( int idBooking) {
+        Logger.info("Удалить бронь");
+        return collectionBookingDAO.deleteBookingByIdBooking( idBooking);
     }
 
     public boolean deleteBooking(Booking booking) {
@@ -51,9 +51,9 @@ public class BookingService {
         return collectionBookingDAO.deleteBooking(booking);
     }
 
-    public boolean createBookingByLoginUserAndFlightId(String loginUser, int flightId, String namePassenger ) {
+    public boolean createBookingByLoginUserAndFlightId(String loginUser, int flightId, String namePassenger, String lastNamePassenger ) {
         Logger.info("Создать бронь");
-        return collectionBookingDAO.createBookingByLoginUserAndFlightId(loginUser, flightId, namePassenger);
+        return collectionBookingDAO.createBookingByLoginUserAndFlightId(loginUser, flightId, namePassenger, lastNamePassenger);
     }
 
     public boolean addBookingFlight(Booking booking) {

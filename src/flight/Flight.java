@@ -56,6 +56,14 @@ public class Flight implements Serializable {
 
     }
 
+    public void bookingFlight(){
+        numberOfFreePlaces--;
+    }
+
+    public void cancelBookedFlight(){
+        numberOfFreePlaces++;
+    }
+
     public String prettyFormat() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("------------------------------------------\n");
@@ -99,9 +107,8 @@ public class Flight implements Serializable {
         }
         stringBuilder.append(minutes);
         stringBuilder.append(" minutes ");
-
-
         stringBuilder.append("\n");
+
         stringBuilder.append("Number of free places: ");
         stringBuilder.append(numberOfFreePlaces);
         stringBuilder.append("\n");

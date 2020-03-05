@@ -143,14 +143,18 @@ public class ConsoleApp {
 
 
     private void cancelBooking() {
-        System.out.print("Enter name passenger -> ");
-        String namePassenger = scanner.next();
-        System.out.print("Enter id booking");
+        System.out.print("Enter id booking -> ");
         int idBooking = Validation.scanInteger();
-        if (bookingController.deleteBookingByLoginUserAndDdBooking(currentUser.getLogin(), idBooking, namePassenger)) {
-            System.out.println("Booking cancel");
+        Booking booking = bookingController.getBookingByBookingId(idBooking);
+        if (Objects.nonNull(booking)) {
+            if (bookingController.deleteBooking(booking)) {
+                flightController.cancelBookingFlight(booking.getIdFlight());
+                System.out.println("Booking cancel");
+            } else {
+                System.out.println("Fail booking cancel");
+            }
         } else {
-            System.out.println("Fail booking cancel");
+            System.out.println("Not Found");
         }
 
     }
@@ -172,6 +176,7 @@ public class ConsoleApp {
             }
             System.out.println("1 - Забронировать рейс");
             System.out.println("2 - Назад");
+            System.out.print("Command -> ");
             int isBooking = Validation.scanInteger(1, 2);
 
             if (isBooking == 1) {
@@ -180,7 +185,10 @@ public class ConsoleApp {
                 if (Objects.nonNull(flightController.getFlightBuFlightId(flightId))) {
                     for (int i = 0; i < numberOfPassengers; i++) {
                         System.out.printf("Name %d passenger -> ", i + 1);
-                        if (bookingFlight(currentUser.getLogin(), flightId, scanner.next())) {
+                        String namePassenger = scanner.next();
+                        System.out.printf("Last name %d passenger -> ", i + 1);
+                        String lastNamePassenger = scanner.next();
+                        if (bookingFlight(currentUser.getLogin(), flightId, namePassenger, lastNamePassenger)) {
                             System.out.println("Booking success");
                         } else {
                             System.out.println("Booking fail");
@@ -196,18 +204,24 @@ public class ConsoleApp {
         }
     }
 
-    private boolean bookingFlight(String loginUser, int flightId, String namePassenger) {
-        return bookingController.createBookingByLoginUserAndFlightId(loginUser, flightId, namePassenger);
+    private boolean bookingFlight(String loginUser, int flightId, String namePassenger, String lastNamePassenger) {
+        boolean result = bookingController.createBookingByLoginUserAndFlightId(loginUser, flightId, namePassenger, lastNamePassenger);
+        if (result) {
+            flightController.bookingFlight(flightId);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void myBooking() {
         List<Booking> bookings = bookingController.getAllBookingsByLoginUser(currentUser.getLogin());
         StringBuilder stringBuilder = new StringBuilder();
         for (Booking booking : bookings) {
-            stringBuilder.append("-----------------------------------------------------------\n");
+            stringBuilder.append("************************************************************\n");
             stringBuilder.append(booking.prettyFormat());
             stringBuilder.append(flightController.getFlightBuFlightId(booking.getIdFlight()).prettyFormat());
-            stringBuilder.append("-----------------------------------------------------------\n");
+            stringBuilder.append("************************************************************\n");
         }
         System.out.println(stringBuilder.toString());
     }
